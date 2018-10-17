@@ -5,6 +5,8 @@ Created on Tue Oct 16 13:30:57 2018
 """
 import random
 import numpy as np
+import plot_graph
+
 class AntColony:
     
     def __init__(self, graph, phero_mat, alpha, beta, rho):
@@ -20,9 +22,11 @@ class AntColony:
         for i in range(num_iters):
             self.start_ants(num_ants)
         
+        print("Final Pheromone Matrix:")
         AntColony.print_mat(self.phero_mat)
-        
+        print("Strongest edges: ")
         print(self.build_best_path())
+        
         
             
     def build_best_path(self):
@@ -71,6 +75,8 @@ class AntColony:
         start_list = []
         
         for ant in range(num_ants):
+            plot_graph.draw_graph(self.phero_mat)
+            plot_graph.pause()
             start = random.randint(0,self.N-1)
             (visited, tour_length, _) = self.ant_walk(start)
             visited_mat.append(visited)
@@ -81,6 +87,7 @@ class AntColony:
         for i in range(len(visited_mat)):
             inv_tour_length = 1/tour_length_list[i]
             evap_mat = self.update_phero_mat(visited_mat[i], inv_tour_length, start_list[i], evap_mat)
+            
         
     def ant_walk(self, start):
         i = start
@@ -160,6 +167,7 @@ if __name__=="__main__":
     beta = 1
     rho = 0.5
     ac = AntColony(graph, phero_mat, alpha, beta, rho)
-    num_ants = 100
-    num_iters = 100
+    num_ants = 10
+    num_iters = 1
     ac.run(num_ants, num_iters)
+    
