@@ -74,12 +74,12 @@ def draw_graph(mat, best_path, cost_mat):
         G.add_edge(i, j, weight=weights[z]*K)
         z += 1
         
-    pos = nx.circular_layout(G)
+    pos = nx.shell_layout(G)
     eds = G.edges()
     wes = [G[u][v]['weight'] for u, v in eds]
 
     labels = get_costs(cost_mat)
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
+    # nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
     nx.draw(G, pos, edges=eds, width=wes, node_color="cyan", with_labels = True)
 
     return fig
