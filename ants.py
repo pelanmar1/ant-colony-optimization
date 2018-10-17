@@ -18,25 +18,21 @@ class AntColony:
         self.rho = rho
     
     def run(self, num_ants, num_iters):
-        
         for i in range(num_iters):
             self.start_ants(num_ants)
-        
         print("Final Pheromone Matrix:")
         AntColony.print_mat(self.phero_mat)
         print("Strongest edges: ")
         print(self.build_best_path())
-        
-        
-            
+
     def build_best_path(self):
         mat = AntColony.copy_mat(self.phero_mat)
         path = []
-        j=0
+        j = 0
         for i in range(self.N):
             nj = mat[j].index(max(mat[j]))
-            mat[nj][j]=0
-            path.append((j,nj))
+            mat[nj][j] = 0
+            path.append((j, nj))
             j = nj
             
         return path
@@ -61,6 +57,7 @@ class AntColony:
                     row.append(val)
             mat.append(row)
         return mat
+
     def print_mat(mat, r=2):
         for i in range(len(mat)):
             row = ""
@@ -75,20 +72,24 @@ class AntColony:
         start_list = []
         
         for ant in range(num_ants):
-            plot_graph.draw_graph(self.phero_mat)
-            plot_graph.pause()
-            start = random.randint(0,self.N-1)
+            start = random.randint(0, self.N-1)
             (visited, tour_length, _) = self.ant_walk(start)
             visited_mat.append(visited)
             tour_length_list.append(tour_length)
             start_list.append(start)
-        
+
         evap_mat = AntColony.create_mat(0,self.N,len(self.graph[0]))
         for i in range(len(visited_mat)):
             inv_tour_length = 1/tour_length_list[i]
+            self.draw_network(i)
             evap_mat = self.update_phero_mat(visited_mat[i], inv_tour_length, start_list[i], evap_mat)
-            
-        
+
+
+    def draw_network(self, file_name):
+        fig = plot_graph.draw_graph(self.phero_mat, self.build_best_path(), self.graph)
+        # plot_graph.pause()
+        fig.savefig("img/" + str(file_name) + ".png")
+
     def ant_walk(self, start):
         i = start
         visited = [start]
@@ -138,15 +139,14 @@ class AntColony:
             evap_mat[a][b] = 1
             evap_mat[b][a] = 1
         return evap_mat
-        
-        
+
     def calc_prob(self, i, j):
-        if i==j:
+        if i == j:
             return 0
         numerator = (self.phero_mat[i][j]**self.alpha)*((1/self.graph[i][j])**self.beta)
         denominator = 0
         for t in range(len(self.graph[i])):
-            if t!=i:
+            if t != i:
                 denominator += (self.phero_mat[i][t]**self.alpha)*((1/self.graph[i][t])**self.beta)
         prob = numerator/denominator
         return prob
